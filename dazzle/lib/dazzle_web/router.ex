@@ -17,7 +17,8 @@ defmodule DazzleWeb.Router do
   scope "/", DazzleWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", PageLive, :index
+    live "/ticker", TickerLive, :index
   end
 
   # Other scopes may use custom stacks.
