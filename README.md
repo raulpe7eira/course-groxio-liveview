@@ -6,7 +6,7 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView V2
 
 ## Apps
 
-### [Dazzle](dazzy/README.md)
+### [Dazzle](dazzle/README.md)
 
 ![demo-1](https://user-images.githubusercontent.com/456260/219923055-0aeee988-88d4-4322-80e2-6ebd7491f463.gif)
 
