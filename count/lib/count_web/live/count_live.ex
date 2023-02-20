@@ -11,10 +11,15 @@ defmodule CountWeb.CountLive do
     <h1>Hello, <%= @hello %>!</h1>
     <h2>If you dream it, we can count it.</h2>
     <p>Your count: <%= @count %></p>
+    <button phx-click={ :inc }>Inc</button>
     """
   end
 
   def handle_info(:tick, socket) do
+    {:noreply, inc(socket)}
+  end
+
+  def handle_event("inc", _params, socket) do
     {:noreply, inc(socket)}
   end
 
