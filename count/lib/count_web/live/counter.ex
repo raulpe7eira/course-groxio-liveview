@@ -12,6 +12,7 @@ defmodule CountWeb.Counter do
   # r - reducers
 
   def update(%{tick: true}, socket) do
+    # receive message from live_view (`count_live.ex` from `handle_info/2`)
     {:ok, tick(socket)}
   end
 
@@ -83,6 +84,9 @@ defmodule CountWeb.Counter do
   end
 
   defp inc(%{assigns: %{counters: counters}} = socket, counter_name) do
+    # pub_sub experiment
+    CountWeb.Endpoint.broadcast("count", "inc", {counter_name, 1})
+
     assign(socket, counters: Boundary.inc(counters, counter_name))
   end
 

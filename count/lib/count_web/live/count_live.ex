@@ -14,6 +14,7 @@ defmodule CountWeb.CountLive do
   # r - reducers
 
   def handle_info(:tick, socket) do
+    # send message to live_component (`counter.ex` in `update/2`)
     send_update(Counter, id: "counters", adding: socket.assigns.live_action != :index, tick: true)
     {:noreply, socket}
   end
