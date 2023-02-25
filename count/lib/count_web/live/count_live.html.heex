@@ -1,3 +1,7 @@
 <Heading.one message="Welcome to the Counter!" />
 <Heading.two message="If you dream it, we can count it!" />
-<.live_component module={Counter} id="counter" counter={@counter} />
+<.live_component let={count} module={Counter} id="counter" counter={@counter}>
+  <div>
+    <p>Your count: <%= count %></p>
+  </div>
+</.live_component>

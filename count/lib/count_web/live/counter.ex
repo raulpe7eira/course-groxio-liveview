@@ -25,7 +25,7 @@ defmodule CountWeb.Counter do
   def render(assigns) do
     ~H"""
     <div id="counter">
-      <p>Your count: <%= @counter.count %></p>
+      <%= render_slot(@inner_block, @counter.count) %>
       <button phx-click={ :inc } phx-target={@myself}>Inc</button>
     </div>
     """
