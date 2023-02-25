@@ -8,6 +8,7 @@ defmodule CountWeb.CountLive do
   # c - constructor
 
   def mount(_params, _session, socket) do
+    :timer.send_interval(1_000, :tick)
     {:ok, init_counters(socket)}
   end
 
