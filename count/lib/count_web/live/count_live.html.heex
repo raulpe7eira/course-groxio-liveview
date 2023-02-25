@@ -1,7 +1,6 @@
 <Heading.one message="Welcome to the Counter!" />
 <Heading.two message="If you dream it, we can count it!" />
-<.live_component let={{name, count}} module={Counter} id="counters" counters={@counters}>
-  <div>
-    <p>Your <%= name %> count: <%= count %></p>
-  </div>
+<pre><%= inspect @live_action %></pre>
+<.live_component let={{name, count}} module={Counter} id="counters" adding={@live_action != :index}>
+  Your <%= name %> count: <%= count %>
 </.live_component>

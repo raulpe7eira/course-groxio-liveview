@@ -18,7 +18,8 @@ defmodule CountWeb.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
-    live("/count", CountLive)
+    live("/count", CountLive, :index)
+    live("/count/add", CountLive, :add)
   end
 
   # Other scopes may use custom stacks.

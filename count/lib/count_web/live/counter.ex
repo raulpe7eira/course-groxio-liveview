@@ -5,10 +5,23 @@ defmodule CountWeb.Counter do
 
   # c - constructor
 
+  def mount(socket) do
+    {:ok, do_init(socket)}
+  end
+
   # r - reducers
 
+  def update(%{tick: true}, socket) do
+    socket =
+      for counter_name <- used_counter_names(socket), reduce: socket do
+        socket -> inc(socket, counter_name)
+      end
+
+    {:ok, socket}
+  end
+
   def update(assigns, socket) do
-    {:ok, init(socket, assigns)}
+    {:ok, do_update(socket, assigns)}
   end
 
   def handle_event("inc", %{"key" => counter_name}, socket) do
@@ -20,11 +33,10 @@ defmodule CountWeb.Counter do
   end
 
   def handle_event("save", %{"tally" => params}, socket) do
-    {:noreply, save(socket, params)}
-  end
-
-  def handle_info({:tick, counter_name}, socket) do
-    {:noreply, inc(socket, counter_name)}
+    {:noreply,
+     socket
+     |> save(params)
+     |> push_patch(to: "/count")}
   end
 
   # c - converter
@@ -32,26 +44,43 @@ defmodule CountWeb.Counter do
   def render(assigns) do
     ~H"""
     <div id="counter">
+      <pre><%= inspect @counters %></pre>
+
+      <%= for {name, _count} = counter <- @counters do %>
+      <ul>
+        <li>
+          <%= render_slot(@inner_block, counter) %>
+          <button phx-click={ :inc } phx-target={@myself} phx-value-key={name}>Inc</button>
+        </li>
+      </ul>
+      <% end %>
+
+      <%= if @adding do %>
       <.form let={f} for={@changeset} phx-target={@myself} phx-change="validate" phx-submit="save">
         <%= label f, :name %>
         <%= text_input f, :name %>
         <%= error_tag f, :name %>
 
+        <%= label f, :count %>
+        <%= text_input f, :count %>
+        <%= error_tag f, :count %>
+
         <%= submit "Add", disabled: not @changeset.valid?() %>
       </.form>
-
-      <%= for {name, _count} = counter <- @counters do %>
-      <%= render_slot(@inner_block, counter) %>
-      <button phx-click={ :inc } phx-target={@myself} phx-value-key={name}>Inc</button>
+      <% else %>
+      <%= live_patch "Add counter", to: "/count/add" %>
       <% end %>
-      <pre><%= inspect @counters %></pre>
     </div>
     """
   end
 
   # private functions
 
-  defp init(socket, assigns) do
+  defp do_init(socket) do
+    assign(socket, counters: Boundary.new_counter([]))
+  end
+
+  defp do_update(socket, assigns) do
     socket
     |> assign(assigns)
     |> change(%{})

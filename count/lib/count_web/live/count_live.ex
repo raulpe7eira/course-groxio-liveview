@@ -1,7 +1,6 @@
 defmodule CountWeb.CountLive do
   use CountWeb, :live_view
 
-  alias Count.Boundary
   alias CountWeb.Counter
   alias CountWeb.Heading
 
@@ -9,12 +8,21 @@ defmodule CountWeb.CountLive do
 
   def mount(_params, _session, socket) do
     :timer.send_interval(1_000, :tick)
-    {:ok, init_counters(socket)}
+    {:ok, socket}
   end
 
   # r - reducers
 
-  # see `counter.ex` instead of `handle_*` function
+  def handle_info(:tick, socket) do
+    send_update(Counter, id: "counters", adding: socket.assigns.live_action != :index, tick: true)
+    {:noreply, socket}
+  end
+
+  def handle_params(_params, _uri, socket) do
+    {:noreply, socket}
+  end
+
+  # see `counter.ex` instead of other `handle_*` functions
 
   # def handle_info(:tick, socket) do
   #   {:noreply, inc(socket)}
@@ -36,10 +44,4 @@ defmodule CountWeb.CountLive do
   #   <button phx-click={ :inc }>Inc</button>
   #   """
   # end
-
-  # private functions
-
-  defp init_counters(socket) do
-    assign(socket, counters: Boundary.new_counter([]))
-  end
 end
