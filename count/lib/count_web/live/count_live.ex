@@ -1,7 +1,7 @@
 defmodule CountWeb.CountLive do
   use CountWeb, :live_view
 
-  alias Count.Core
+  alias Count.Boundary
   alias CountWeb.Counter
   alias CountWeb.Heading
 
@@ -40,6 +40,6 @@ defmodule CountWeb.CountLive do
   # private functions
 
   defp init_counters(socket) do
-    assign(socket, counters: Core.new(~w[lions tigers bears]))
+    assign(socket, counters: Boundary.new_counter([]))
   end
 end

@@ -2,8 +2,6 @@ defmodule CountWeb.Counter do
   use CountWeb, :live_component
 
   alias Count.Boundary
-  alias Count.Core
-  alias Count.Tally
 
   # c - constructor
 
@@ -56,27 +54,21 @@ defmodule CountWeb.Counter do
   defp init(socket, assigns) do
     socket
     |> assign(assigns)
-    |> assign(changeset: Tally.validate(%{}, Map.keys(assigns.counters)))
+    |> change(%{})
   end
 
-  defp inc(socket, counter_name) do
-    assign(socket, counters: Core.inc(socket.assigns.counters, counter_name))
+  defp inc(%{assigns: %{counters: counters}} = socket, counter_name) do
+    assign(socket, counters: Boundary.inc(counters, counter_name))
   end
 
   defp change(socket, params) do
-    used_names = Map.keys(socket.assigns.counters)
-
-    changeset =
-      params
-      |> Tally.validate(used_names)
-      |> Map.put(:action, :insert)
-
-    assign(socket, changeset: changeset)
+    assign(socket, changeset: Boundary.validate(params, used_counter_names(socket)))
   end
 
-  defp save(socket, params) do
-    socket = change(socket, params)
-
-    assign(socket, counters: Boundary.add(socket.assigns.counters, socket.assigns.changeset))
+  defp save(%{assigns: %{counters: counters}} = socket, params) do
+    assign(socket, counters: Boundary.add(counters, params, used_counter_names(socket)))
   end
+
+  defp used_counter_names(socket),
+    do: Map.keys(socket.assigns.counters)
 end
