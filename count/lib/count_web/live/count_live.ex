@@ -8,12 +8,12 @@ defmodule CountWeb.CountLive do
   # c - constructor
 
   def mount(_params, _session, socket) do
-    {:ok, init_counter(socket)}
+    {:ok, init_counters(socket)}
   end
 
   # r - reducers
 
-  # see `counter.ex` instead of `handle_` function
+  # see `counter.ex` instead of `handle_*` function
 
   # def handle_info(:tick, socket) do
   #   {:noreply, inc(socket)}
@@ -38,7 +38,7 @@ defmodule CountWeb.CountLive do
 
   # private functions
 
-  defp init_counter(socket) do
-    assign(socket, counter: Core.new())
+  defp init_counters(socket) do
+    assign(socket, counters: Core.new(~w[lions tigers bears]))
   end
 end

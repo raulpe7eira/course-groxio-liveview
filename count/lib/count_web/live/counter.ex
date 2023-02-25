@@ -12,12 +12,12 @@ defmodule CountWeb.Counter do
 
   # r - reducers
 
-  def handle_info(:tick, socket) do
-    {:noreply, inc(socket)}
+  def handle_info({:tick, counter_name}, socket) do
+    {:noreply, inc(socket, counter_name)}
   end
 
-  def handle_event("inc", _params, socket) do
-    {:noreply, inc(socket)}
+  def handle_event("inc", %{"key" => counter_name}, socket) do
+    {:noreply, inc(socket, counter_name)}
   end
 
   # c - converter
@@ -25,15 +25,18 @@ defmodule CountWeb.Counter do
   def render(assigns) do
     ~H"""
     <div id="counter">
-      <%= render_slot(@inner_block, @counter.count) %>
-      <button phx-click={ :inc } phx-target={@myself}>Inc</button>
+      <%= for {name, _count} = counter <- @counters do %>
+      <%= render_slot(@inner_block, counter) %>
+      <button phx-click={ :inc } phx-target={@myself} phx-value-key={name}>Inc</button>
+      <% end %>
+      <pre><%= inspect @counters %></pre>
     </div>
     """
   end
 
   # private functions
 
-  defp inc(socket) do
-    assign(socket, counter: Core.inc(socket.assigns.counter))
+  defp inc(socket, counter_name) do
+    assign(socket, counters: Core.inc(socket.assigns.counters, counter_name))
   end
 end
