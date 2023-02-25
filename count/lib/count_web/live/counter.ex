@@ -12,12 +12,7 @@ defmodule CountWeb.Counter do
   # r - reducers
 
   def update(%{tick: true}, socket) do
-    socket =
-      for counter_name <- used_counter_names(socket), reduce: socket do
-        socket -> inc(socket, counter_name)
-      end
-
-    {:ok, socket}
+    {:ok, tick(socket)}
   end
 
   def update(assigns, socket) do
@@ -33,10 +28,7 @@ defmodule CountWeb.Counter do
   end
 
   def handle_event("save", %{"tally" => params}, socket) do
-    {:noreply,
-     socket
-     |> save(params)
-     |> push_patch(to: "/count")}
+    {:noreply, save(socket, params)}
   end
 
   # c - converter
@@ -47,12 +39,10 @@ defmodule CountWeb.Counter do
       <pre><%= inspect @counters %></pre>
 
       <%= for {name, _count} = counter <- @counters do %>
-      <ul>
-        <li>
-          <%= render_slot(@inner_block, counter) %>
-          <button phx-click={ :inc } phx-target={@myself} phx-value-key={name}>Inc</button>
-        </li>
-      </ul>
+      <p>
+        <%= render_slot(@inner_block, counter) %>
+        <button phx-click={ :inc } phx-target={@myself} phx-value-key={name}>Inc</button>
+      </p>
       <% end %>
 
       <%= if @adding do %>
@@ -86,6 +76,12 @@ defmodule CountWeb.Counter do
     |> change(%{})
   end
 
+  defp tick(socket) do
+    for counter_name <- used_counter_names(socket), reduce: socket do
+      socket -> inc(socket, counter_name)
+    end
+  end
+
   defp inc(%{assigns: %{counters: counters}} = socket, counter_name) do
     assign(socket, counters: Boundary.inc(counters, counter_name))
   end
@@ -95,7 +91,9 @@ defmodule CountWeb.Counter do
   end
 
   defp save(%{assigns: %{counters: counters}} = socket, params) do
-    assign(socket, counters: Boundary.add(counters, params, used_counter_names(socket)))
+    socket
+    |> assign(counters: Boundary.add(counters, params, used_counter_names(socket)))
+    |> push_patch(to: "/count")
   end
 
   defp used_counter_names(socket),
