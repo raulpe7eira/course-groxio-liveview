@@ -2,27 +2,26 @@ defmodule CountWeb.CountLive do
   use CountWeb, :live_view
 
   alias Count.Core
+  alias CountWeb.Counter
   alias CountWeb.Heading
 
   # c - constructor
 
   def mount(_params, _session, socket) do
-    :timer.send_interval(1_000, :tick)
-
-    {:ok,
-     socket
-     |> init_counter()}
+    {:ok, init_counter(socket)}
   end
 
   # r - reducers
 
-  def handle_info(:tick, socket) do
-    {:noreply, inc(socket)}
-  end
+  # see `counter.ex` instead of `handle_` function
 
-  def handle_event("inc", _params, socket) do
-    {:noreply, inc(socket)}
-  end
+  # def handle_info(:tick, socket) do
+  #   {:noreply, inc(socket)}
+  # end
+
+  # def handle_event("inc", _params, socket) do
+  #   {:noreply, inc(socket)}
+  # end
 
   # c - converter
 
@@ -41,9 +40,5 @@ defmodule CountWeb.CountLive do
 
   defp init_counter(socket) do
     assign(socket, counter: Core.new())
-  end
-
-  defp inc(socket) do
-    assign(socket, counter: Core.inc(socket.assigns.counter))
   end
 end
