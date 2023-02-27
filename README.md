@@ -12,4 +12,10 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView V2
 
 ### [Count](count/README.md)
 
-![demo-2](https://user-images.githubusercontent.com/456260/219923056-2c81ecb2-ddc5-4ea2-8cc3-4db36bf30fa7.gif)
+![demo-2](https://user-images.githubusercontent.com/456260/221549823-7aefca28-635a-4732-9c4b-bedcd8344df7.gif)
+
+
+### [Duit](duit/README.md)
+
+![demo-3](https://user-images.githubusercontent.com/456260/221549854-71414e68-21ba-4ea8-ad42-0fa617d8165e.gif)
+
