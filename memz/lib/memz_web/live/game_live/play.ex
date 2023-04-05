@@ -7,7 +7,12 @@ defmodule MemzWeb.GameLive.Play do
   @default_steps 0
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, eraser: nil, changeset: Game.change_game(default_game(), %{}))}
+    {:ok,
+     assign(socket,
+       eraser: nil,
+       changeset: Game.change_game(default_game(), %{}),
+       guess_changeset: Game.guess_changeset()
+     )}
   end
 
   def render(%{eraser: nil} = assigns) do
@@ -34,13 +39,44 @@ defmodule MemzWeb.GameLive.Play do
     """
   end
 
-  def render(assigns) do
+  def render(%{eraser: %{status: :erasing}} = assigns) do
     ~L"""
     <h1>Memorize this much:</h1>
     <pre>
     <%= @eraser.text %>
     </pre>
     <button phx-click="erase">Erase some</button>
+
+    <%= score(@eraser) %>
+    """
+  end
+
+  def render(%{eraser: %{status: :guessing}} = assigns) do
+    ~L"""
+    <h1>Type the text, filling in the blanks!</h1>
+    <pre>
+    <%= @eraser.text %>
+    </pre>
+
+    <%= f = form_for @guess_changeset, "#",
+      phx_submit: "score",
+      as: "guess" %>
+
+      <%= label f, :text %>
+      <%= text_input f, :text %>
+      <%= error_tag f, :text %>
+
+      <%= submit "Type the text" %>
+    </form>
+    """
+  end
+
+  def render(%{eraser: %{status: :finished}} = assigns) do
+    ~L"""
+    <h1>Nice job! See how you did:</h1>
+    <pre>
+      <%= score(@eraser) %>
+    </pre>
     """
   end
 
@@ -54,6 +90,17 @@ defmodule MemzWeb.GameLive.Play do
 
   def handle_event("erase", _meta, socket) do
     {:noreply, erase(socket)}
+  end
+
+  def handle_event("score", %{"guess" => %{"text" => guess}}, socket) do
+    {:noreply, score(socket, guess)}
+  end
+
+  def score(eraser) do
+    """
+    <h2>Your score so far (lower is better): #{eraser.score}</h2>
+    """
+    |> Phoenix.HTML.raw()
   end
 
   defp default_game(), do: Game.new_game(@default_text, @default_steps)
@@ -71,7 +118,11 @@ defmodule MemzWeb.GameLive.Play do
     assign(socket, eraser: eraser)
   end
 
-  def erase(socket) do
-    assign(socket, eraser: Game.erase(socket.assigns.eraser, ""))
+  defp erase(socket) do
+    assign(socket, eraser: Game.erase(socket.assigns.eraser))
+  end
+
+  defp score(socket, guess) do
+    assign(socket, eraser: Game.score(socket.assigns.eraser, guess))
   end
 end

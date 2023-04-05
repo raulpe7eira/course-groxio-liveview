@@ -1,12 +1,19 @@
 defmodule Memz.Game.Eraser do
-  defstruct ~w[text schedule score initial_text]a
+  # mode: finished, guessing, erasing
+  defstruct ~w[text schedule score initial_text status]a
   @delete_proof ["\n", ",", "."]
 
   def new(text, steps) do
-    %__MODULE__{text: text, schedule: schedule(text, steps), score: 0, initial_text: text}
+    %__MODULE__{
+      text: text,
+      schedule: schedule(text, steps),
+      score: 0,
+      initial_text: text,
+      status: :erasing
+    }
   end
 
-  def erase(%{schedule: [to_erase | rest], text: text} = eraser, guess) do
+  def erase(%{schedule: [to_erase | rest], text: text} = eraser) do
     erased =
       text
       |> String.graphemes()
@@ -14,8 +21,12 @@ defmodule Memz.Game.Eraser do
       |> Enum.map(fn {char, index} -> maybe_erase(char, index in to_erase) end)
       |> Enum.join("")
 
-    %{eraser | schedule: rest, text: erased}
-    |> compute_score(guess)
+    %{eraser | schedule: rest, text: erased, status: :guessing}
+  end
+
+  def score(eraser, guess) do
+    compute_score(eraser, guess)
+    |> set_next_status()
   end
 
   defp compute_score(eraser, guess) do
@@ -28,6 +39,14 @@ defmodule Memz.Game.Eraser do
       |> String.length()
 
     %{eraser | score: eraser.score + score_difference}
+  end
+
+  defp set_next_status(%{schedule: []} = eraser) do
+    %{eraser | status: :finished}
+  end
+
+  defp set_next_status(eraser) do
+    %{eraser | status: :erasing}
   end
 
   defp schedule(text, steps) do
@@ -47,6 +66,6 @@ defmodule Memz.Game.Eraser do
   defp maybe_erase(_char, true), do: "_"
   defp maybe_erase(char, false), do: char
 
-  def done?(%{steps: []}), do: true
-  def done?(_steps), do: false
+  def done?(%{status: :finished}), do: true
+  def done?(_eraser), do: false
 end
