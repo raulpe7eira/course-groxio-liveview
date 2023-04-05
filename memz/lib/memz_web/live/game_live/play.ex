@@ -72,6 +72,6 @@ defmodule MemzWeb.GameLive.Play do
   end
 
   def erase(socket) do
-    assign(socket, eraser: Game.erase(socket.assigns.eraser))
+    assign(socket, eraser: Game.erase(socket.assigns.eraser, ""))
   end
 end
