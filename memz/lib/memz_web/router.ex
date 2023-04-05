@@ -18,7 +18,7 @@ defmodule MemzWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    live "/game/welcome", GameLive.Welcome, :index
+    live "/game/play", GameLive.Play, :play
   end
 
   # Other scopes may use custom stacks.
