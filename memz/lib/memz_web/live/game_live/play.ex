@@ -1,6 +1,8 @@
 defmodule MemzWeb.GameLive.Play do
   use MemzWeb, :live_view
 
+  alias Memz.BestScores
+  alias Memz.BestScores.Score
   alias Memz.Game
 
   @default_text ""
@@ -11,16 +13,61 @@ defmodule MemzWeb.GameLive.Play do
      assign(socket,
        eraser: nil,
        changeset: Game.change_game(default_game(), %{}),
-       guess_changeset: Game.guess_changeset()
+       guess_changeset: Game.guess_changeset(),
+       top_scores: nil
      )}
+  end
+
+  def render(%{live_action: :over, top_scores: nil} = assigns) do
+    ~L"""
+    <h1>Game over!</h1>
+    <h2>Your score: <%= @eraser.score %></h2>
+
+    <p>Enter your initials:</p>
+    <%= f = form_for @score_changeset, "#",
+      phx_change: "validate_score",
+      phx_submit: "save_score" %>
+
+      <%= label f, :score %>
+      <%= number_input f, :score, disabled: true %>
+      <%= error_tag f, :score %>
+
+      <%= label f, :initials %>
+      <%= text_input f, :initials %>
+      <%= error_tag f, :initials %>
+
+      <%= submit "Submit Score", disabled: !@score_changeset.valid? %>
+    </form>
+
+    <button phx-click="play">Play again?</button>
+    """
+  end
+
+  def render(%{live_action: :over} = assigns) do
+    ~L"""
+    <h1>Game over!</h1>
+    <h2>Your score: <%= @eraser.score %></h2>
+
+    <p>Great Job! High scores</p>
+    <table>
+      <tr>
+        <th>Score</th>
+        <th>Initials</th>
+      </tr>
+      <%= for score <- @top_scores do %>
+      <tr>
+        <td><%= score.score %></td>
+        <td><%= score.initials %></td>
+      </tr>
+      <% end %>
+    </table>
+    <button phx-click="play">Play again?</button>
+    """
   end
 
   def render(%{eraser: nil} = assigns) do
     ~L"""
     <h1>What do you want to memorize?</h1>
-    <pre>
-    <%= inspect @changeset %>
-    </pre>
 
     <%= f = form_for @changeset, "#",
       phx_change: "validate",
@@ -42,9 +89,8 @@ defmodule MemzWeb.GameLive.Play do
   def render(%{eraser: %{status: :erasing}} = assigns) do
     ~L"""
     <h1>Memorize this much:</h1>
-    <pre>
-    <%= @eraser.text %>
-    </pre>
+
+    <pre><%= @eraser.text %></pre>
     <button phx-click="erase">Erase some</button>
 
     <%= score(@eraser) %>
@@ -54,10 +100,8 @@ defmodule MemzWeb.GameLive.Play do
   def render(%{eraser: %{status: :guessing}} = assigns) do
     ~L"""
     <h1>Type the text, filling in the blanks!</h1>
-    <pre>
-    <%= @eraser.text %>
-    </pre>
 
+    <pre><%= @eraser.text %></pre>
     <%= f = form_for @guess_changeset, "#",
       phx_submit: "score",
       as: "guess" %>
@@ -74,9 +118,8 @@ defmodule MemzWeb.GameLive.Play do
   def render(%{eraser: %{status: :finished}} = assigns) do
     ~L"""
     <h1>Nice job! See how you did:</h1>
-    <pre>
-      <%= score(@eraser) %>
-    </pre>
+
+    <pre><%= score(@eraser) %></pre>
     """
   end
 
@@ -93,7 +136,22 @@ defmodule MemzWeb.GameLive.Play do
   end
 
   def handle_event("score", %{"guess" => %{"text" => guess}}, socket) do
-    {:noreply, score(socket, guess)}
+    {:noreply,
+     socket
+     |> score(guess)
+     |> maybe_finish()}
+  end
+
+  def handle_event("validate_score", %{"score" => params}, socket) do
+    {:noreply, validate_score(socket, params)}
+  end
+
+  def handle_event("save_score", %{"score" => params}, socket) do
+    {:noreply, save_score(socket, params)}
+  end
+
+  def handle_params(_params, _meta, socket) do
+    {:noreply, socket}
   end
 
   def score(eraser) do
@@ -124,5 +182,27 @@ defmodule MemzWeb.GameLive.Play do
 
   defp score(socket, guess) do
     assign(socket, eraser: Game.score(socket.assigns.eraser, guess))
+  end
+
+  defp maybe_finish(%{assigns: %{eraser: %{status: :finished, score: score}}} = socket) do
+    socket
+    |> assign(score_changeset: BestScores.change_score(%Score{score: score}, %{}))
+    |> push_patch(to: "/game/over")
+  end
+
+  defp maybe_finish(socket), do: socket
+
+  defp validate_score(socket, params) do
+    changeset =
+      %Score{score: socket.assigns.eraser.score}
+      |> BestScores.change_score(params)
+      |> Map.put(:action, :validate)
+
+    assign(socket, score_changeset: changeset)
+  end
+
+  defp save_score(socket, params) do
+    BestScores.create_score(params["initials"], socket.assigns.eraser.score)
+    assign(socket, top_scores: BestScores.top_scores())
   end
 end
