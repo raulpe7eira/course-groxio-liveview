@@ -4,7 +4,7 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView](h
 
 > There are many apps in this repository.
 
-<details><summary>Apps V1</summary>
+<details><summary>Apps (v1)</summary>
 
 ## [Duit](duit/README.md)
 
@@ -12,11 +12,11 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView](h
 
 ## [Memz](memz/README.md)
 
-![demo-4](https://user-images.githubusercontent.com/456260/221549854-71414e68-21ba-4ea8-ad42-0fa617d8165e.gif)
+![demo-4](https://user-images.githubusercontent.com/bla-bla-bla.gif)
 
 </details>
 
-<details><summary>Apps V2</summary>
+<details><summary>Apps (v2)</summary>
 
 ## [Dazzle](dazzle/README.md)
 
