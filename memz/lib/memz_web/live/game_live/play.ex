@@ -8,17 +8,20 @@ defmodule MemzWeb.GameLive.Play do
   @default_text ""
   @default_steps 0
 
+  def mount(_params, _session, %{assigns: %{live_action: :over}} = socket) do
+    {:ok, push_redirect(socket, to: "/game/welcome")}
+  end
+
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
        eraser: nil,
        changeset: Game.change_game(default_game(), %{}),
-       guess_changeset: Game.guess_changeset(),
-       top_scores: nil
+       guess_changeset: Game.guess_changeset()
      )}
   end
 
-  def render(%{live_action: :over, top_scores: nil} = assigns) do
+  def render(%{live_action: :over} = assigns) do
     ~L"""
     <h1>Game over!</h1>
     <h2>Your score: <%= @eraser.score %></h2>
@@ -39,28 +42,6 @@ defmodule MemzWeb.GameLive.Play do
       <%= submit "Submit Score", disabled: !@score_changeset.valid? %>
     </form>
 
-    <button phx-click="play">Play again?</button>
-    """
-  end
-
-  def render(%{live_action: :over} = assigns) do
-    ~L"""
-    <h1>Game over!</h1>
-    <h2>Your score: <%= @eraser.score %></h2>
-
-    <p>Great Job! High scores</p>
-    <table>
-      <tr>
-        <th>Score</th>
-        <th>Initials</th>
-      </tr>
-      <%= for score <- @top_scores do %>
-      <tr>
-        <td><%= score.score %></td>
-        <td><%= score.initials %></td>
-      </tr>
-      <% end %>
-    </table>
     <button phx-click="play">Play again?</button>
     """
   end
@@ -203,6 +184,6 @@ defmodule MemzWeb.GameLive.Play do
 
   defp save_score(socket, params) do
     BestScores.create_score(params["initials"], socket.assigns.eraser.score)
-    assign(socket, top_scores: BestScores.top_scores())
+    push_redirect(socket, to: "/game/welcome")
   end
 end

@@ -5,6 +5,7 @@ defmodule Memz.BestScores.Query do
 
   def top_scores(limit) do
     from s in Score,
+      select: {s.initials, s.score},
       order_by: [{:asc, :score}],
       limit: ^limit
   end

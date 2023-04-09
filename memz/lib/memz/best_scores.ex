@@ -62,6 +62,8 @@ defmodule Memz.BestScores do
 
   """
   def create_score(attrs \\ %{}) do
+    Phoenix.PubSub.broadcast(Memz.PubSub, "top scores", "score-changed")
+
     %Score{}
     |> Score.changeset(attrs)
     |> Repo.insert()
