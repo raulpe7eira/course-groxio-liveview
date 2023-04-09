@@ -21,6 +21,53 @@ defmodule Memz.Passages do
     Repo.all(Reading)
   end
 
+  def get_first_reading() do
+    from(r in Reading,
+      order_by: [desc: :name],
+      limit: 1
+    )
+    |> Repo.all()
+    |> List.first()
+  end
+
+  def next_passage(name) do
+    compute_next_passage(reading_names(), name)
+  end
+
+  def previous_passage(name) do
+    reading_names()
+    |> Enum.reverse()
+    |> compute_next_passage(name)
+  end
+
+  defp reading_names do
+    from(r in Reading,
+      select: r.name,
+      order_by: [desc: :name]
+    )
+    |> Repo.all()
+  end
+
+  defp compute_next_passage(_names, nil), do: nil
+
+  defp compute_next_passage(names, passage_name) do
+    names
+    |> Enum.drop_while(fn name -> name != passage_name end)
+    |> Enum.drop(1)
+    |> List.first()
+    |> Kernel.||(List.first(names))
+  rescue
+    _err -> nil
+  end
+
+  def lookup_reading(name) do
+    from(r in Reading,
+      where: r.name == ^name
+    )
+    |> Repo.all()
+    |> List.first()
+  end
+
   @doc """
   Gets a single reading.
 
