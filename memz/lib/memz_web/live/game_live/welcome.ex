@@ -9,8 +9,8 @@ defmodule MemzWeb.GameLive.Welcome do
 
     {:ok,
      socket
-     |> fetch_scores
-     |> fetch_initial_reading}
+     |> fetch_initial_reading()
+     |> fetch_scores()}
   end
 
   def render(assigns) do
@@ -48,30 +48,28 @@ defmodule MemzWeb.GameLive.Welcome do
     """
   end
 
-  def handle_event("play", _meta, socket) do
-    {:noreply, push_redirect(socket, to: "/game/play")}
+  def handle_event("play", %{"reading" => passage_name}, socket) do
+    {:noreply, push_redirect(socket, to: "/game/play/#{passage_name}")}
   end
 
   def handle_event("next_passage", _meta, socket) do
     {:noreply,
      socket
      |> next_passage()
-     |> lookup_reading()}
+     |> lookup_reading()
+     |> fetch_scores()}
   end
 
   def handle_event("previous_passage", _meta, socket) do
     {:noreply,
      socket
      |> previous_passage()
-     |> lookup_reading()}
+     |> lookup_reading()
+     |> fetch_scores()}
   end
 
   def handle_info("score-changed", socket) do
     {:noreply, fetch_scores(socket)}
-  end
-
-  defp fetch_scores(socket) do
-    assign(socket, top_scores: BestScores.top_scores())
   end
 
   defp fetch_initial_reading(socket) do
@@ -82,6 +80,10 @@ defmodule MemzWeb.GameLive.Welcome do
 
   defp maybe_passage_name(nil), do: nil
   defp maybe_passage_name(reading), do: reading.name
+
+  defp fetch_scores(socket) do
+    assign(socket, top_scores: BestScores.top_scores(socket.assigns.reading.id))
+  end
 
   defp next_passage(socket) do
     assign(socket, passage_name: Passages.next_passage(socket.assigns.passage_name))

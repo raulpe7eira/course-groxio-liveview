@@ -4,10 +4,10 @@ defmodule Memz.BestScores do
   """
 
   import Ecto.Query, warn: false
-  alias Memz.Repo
 
   alias Memz.BestScores.Query
   alias Memz.BestScores.Score
+  alias Memz.Repo
 
   @doc """
   Returns the list of scores.
@@ -22,9 +22,9 @@ defmodule Memz.BestScores do
     Repo.all(Score)
   end
 
-  def top_scores(limit \\ 5) do
-    limit
-    |> Query.top_scores()
+  def top_scores(reading_id, limit \\ 5) do
+    reading_id
+    |> Query.top_scores(limit)
     |> Repo.all()
   end
 
@@ -44,9 +44,8 @@ defmodule Memz.BestScores do
   """
   def get_score!(id), do: Repo.get!(Score, id)
 
-  def create_score(initials, score) do
-    %{initials: initials, score: score}
-    |> create_score()
+  def create_score(reading, initials, score) do
+    create_score(reading, %{initials: initials, score: score})
   end
 
   @doc """
@@ -61,10 +60,10 @@ defmodule Memz.BestScores do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_score(attrs \\ %{}) do
+  def create_score(reading, attrs \\ %{}) do
     Phoenix.PubSub.broadcast(Memz.PubSub, "top scores", "score-changed")
 
-    %Score{}
+    Ecto.build_assoc(reading, :scores)
     |> Score.changeset(attrs)
     |> Repo.insert()
   end

@@ -4,9 +4,9 @@ defmodule Memz.Passages do
   """
 
   import Ecto.Query, warn: false
-  alias Memz.Repo
 
   alias Memz.Passages.Reading
+  alias Memz.Repo
 
   @doc """
   Returns the list of readings.

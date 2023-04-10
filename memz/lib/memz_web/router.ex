@@ -20,7 +20,7 @@ defmodule MemzWeb.Router do
     get "/", PageController, :index
 
     live "/game/over", GameLive.Play, :over
-    live "/game/play", GameLive.Play, :play
+    live "/game/play/:passage_name", GameLive.Play, :play
     live "/game/welcome", GameLive.Welcome, :welcome
 
     live "/readings", ReadingLive.Index, :index
