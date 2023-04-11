@@ -26,7 +26,7 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView](h
 
 </details>
 
-<details open><summary>Apps (v2)</summary>
+<details><summary>Apps (v2)</summary>
 
 ## [Dazzle](dazzle/README.md)
 
@@ -39,5 +39,13 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView](h
 > The phoenix app for simulate live view w/ components.
 
 ![demo-2](https://user-images.githubusercontent.com/456260/221549823-7aefca28-635a-4732-9c4b-bedcd8344df7.gif)
+
+</details>
+
+<details open><summary>Apps (v3)</summary>
+
+## [Bigr](bigr/README.md)
+
+> In progress...
 
 </details>
