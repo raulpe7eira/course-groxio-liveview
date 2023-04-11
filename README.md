@@ -8,7 +8,7 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView](h
 
 ## [Duit](duit/README.md)
 
-> The phoenix app w/ default `phx.gen.live`.
+> The phoenix app generated w/ default `phx.gen.live`.
 
 ![demo-3](https://user-images.githubusercontent.com/456260/221549854-71414e68-21ba-4ea8-ad42-0fa617d8165e.gif)
 
@@ -20,7 +20,7 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView](h
   
 ## [Auth](auth/README.md)
 
-> The phoenix app w/ default `phx.gen.auth`.
+> The phoenix app generated w/ default `phx.gen.auth`.
 
 ![demo-5](https://user-images.githubusercontent.com/456260/231049445-73054d79-af0f-4836-9058-2cadbe4d7b7e.gif)
 
