@@ -48,4 +48,10 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView Co
 
 > In progress...
 
+## [Links](links/README.md)
+
+> The phoenix app to simulate differences in navigation
+
+![demo-7](https://user-images.githubusercontent.com/456260/231591062-b3372664-323e-42ff-a137-245fc5bf076b.gif)
+
 </details>
