@@ -46,12 +46,20 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView Co
 
 ## [Bigr](bigr/README.md)
 
-> In progress...
+> The phoenix app w/ new behavior for components.
+
+![demo-6](https://user-images.githubusercontent.com/456260/231606494-6fcfaaad-ce46-44a1-86d0-d3589e4dd876.gif)
 
 ## [Links](links/README.md)
 
-> The phoenix app to simulate differences in navigation
+> The phoenix app to simulate differences in navigation.
 
 ![demo-7](https://user-images.githubusercontent.com/456260/231591062-b3372664-323e-42ff-a137-245fc5bf076b.gif)
+
+## [Riddler](riddler/README.md)
+
+> The phoenix app generated w/ default `phx.gen.auth` and `phx.gen.live`.
+
+![demo-8](https://user-images.githubusercontent.com/456260/231606169-e8be1159-a312-4add-8450-494613f32bbb.gif)
 
 </details>
