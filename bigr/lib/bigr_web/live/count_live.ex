@@ -26,6 +26,14 @@ defmodule BigrWeb.CountLive do
     >
       Dec
     </button>
+
+    <hr />
+
+    <div class="grid grid-cols-3 gap-4">
+      <%= for t <- 1..12 do %>
+        <.game table_number={t} />
+      <% end %>
+    </div>
     """
   end
 
@@ -35,5 +43,13 @@ defmodule BigrWeb.CountLive do
 
   def handle_event("dec", _meta, socket) do
     {:noreply, assign(socket, counter: Counter.dec(socket.assigns.counter))}
+  end
+
+  attr :table_number, :integer, required: true
+
+  defp game(assigns) do
+    ~H"""
+    <div><%= @table_number %></div>
+    """
   end
 end
