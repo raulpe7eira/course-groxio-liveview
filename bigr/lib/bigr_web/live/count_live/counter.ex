@@ -10,12 +10,10 @@ defmodule BigrWeb.CountLive.Counter do
      |> assign(counter: Counter.new())}
   end
 
-  def handle_event("inc", _meta, socket) do
-    {:noreply, assign(socket, counter: Counter.inc(socket.assigns.counter))}
-  end
+  def handle_event("inc", %{"inc-by" => inc_by}, socket) do
+    by = String.to_integer(inc_by)
 
-  def handle_event("dec", _meta, socket) do
-    {:noreply, assign(socket, counter: Counter.dec(socket.assigns.counter))}
+    {:noreply, assign(socket, counter: Counter.inc(socket.assigns.counter, by))}
   end
 
   def render(assigns) do
@@ -28,23 +26,24 @@ defmodule BigrWeb.CountLive.Counter do
         </p>
       </div>
       <div class="px-6 pt-4 pb-2">
-        <.count_button click="inc" target={@myself}>Inc</.count_button>
-        <.count_button click="dec" target={@myself}>Dec</.count_button>
+        <.count_button target={@myself}>Inc</.count_button>
+        <.count_button target={@myself} by={-1}>Dec</.count_button>
       </div>
     </div>
     """
   end
 
-  attr :click, :string, required: true
   attr :target, :any, required: true
+  attr :by, :integer, default: 1
   slot :inner_block, required: true
 
   defp count_button(assigns) do
     ~H"""
     <span
       class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-      phx-click={@click}
+      phx-click="inc"
       phx-target={@target}
+      phx-value-inc-by={@by}
     >
       <%= render_slot(@inner_block) %>
     </span>
