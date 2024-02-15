@@ -4,8 +4,10 @@ defmodule Riddler.Game do
   """
 
   import Ecto.Query, warn: false
-  alias Riddler.Repo
 
+  alias Ecto.Multi
+  alias Riddler.Repo
+  alias Riddler.Game.Point
   alias Riddler.Game.Puzzle
 
   @doc """
@@ -35,7 +37,11 @@ defmodule Riddler.Game do
       ** (Ecto.NoResultsError)
 
   """
-  def get_puzzle!(id), do: Repo.get!(Puzzle, id)
+  def get_puzzle!(id) do
+    Puzzle
+    |> Repo.get!(id)
+    |> Repo.preload(:points)
+  end
 
   @doc """
   Creates a puzzle.
@@ -100,5 +106,21 @@ defmodule Riddler.Game do
   """
   def change_puzzle(%Puzzle{} = puzzle, attrs \\ %{}) do
     Puzzle.changeset(puzzle, attrs)
+  end
+
+  def save_puzzle_points(puzzle, points) do
+    now =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.truncate(:second)
+
+    new_points =
+      Enum.map(points, fn {x, y} ->
+        %{x: x, y: y, puzzle_id: puzzle.id, inserted_at: now, updated_at: now}
+      end)
+
+    Multi.new()
+    |> Multi.delete_all(:delete_points, Ecto.assoc(puzzle, :points))
+    |> Multi.insert_all(:insert_points, Point, new_points)
+    |> Repo.transaction()
   end
 end

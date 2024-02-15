@@ -2,10 +2,14 @@ defmodule Riddler.Game.Puzzle do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Riddler.Game.Point
+
   schema "puzzles" do
     field :height, :integer
     field :name, :string
     field :width, :integer
+
+    has_many :points, Point
 
     timestamps()
   end
