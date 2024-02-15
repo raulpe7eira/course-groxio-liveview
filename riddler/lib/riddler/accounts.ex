@@ -4,9 +4,13 @@ defmodule Riddler.Accounts do
   """
 
   import Ecto.Query, warn: false
+
+  alias Riddler.Accounts.User
+  alias Riddler.Accounts.UserToken
+  alias Riddler.Accounts.UserNotifier
   alias Riddler.Repo
 
-  alias Riddler.Accounts.{User, UserToken, UserNotifier}
+  @admin_emails ["admin@example.com"]
 
   ## Database getters
 
@@ -350,4 +354,7 @@ defmodule Riddler.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  def admin?(nil), do: false
+  def admin?(%{email: email} = _user), do: email in @admin_emails
 end
