@@ -12,8 +12,13 @@ defmodule RiddlerWeb.PuzzleLive.Points do
   end
 
   @impl true
-  def handle_event("toggle", %{"x" => x, "y" => y}, socket) do
-    {:noreply, change_cell(socket, x, y)}
+  def handle_event("toggle-rect", %{"x" => x, "y" => y}, socket) do
+    {:noreply, toggle_rect(socket, x, y)}
+  end
+
+  @impl true
+  def handle_event("toggle", _params, socket) do
+    {:noreply, toggle(socket)}
   end
 
   @impl true
@@ -32,7 +37,7 @@ defmodule RiddlerWeb.PuzzleLive.Points do
     assign(socket, grid: grid)
   end
 
-  defp change_cell(socket, x, y) do
+  defp toggle_rect(socket, x, y) do
     grid = socket.assigns.grid
 
     x = String.to_integer(x)
@@ -41,6 +46,15 @@ defmodule RiddlerWeb.PuzzleLive.Points do
     new_grid = Map.put(grid, {x, y}, !grid[{x, y}])
 
     assign(socket, grid: new_grid)
+  end
+
+  defp toggle(socket) do
+    toggled_grid =
+      socket.assigns.grid
+      |> Enum.map(fn {point, alive} -> {point, !alive} end)
+      |> Enum.into(%{})
+
+    assign(socket, grid: toggled_grid)
   end
 
   defp save(socket) do
@@ -72,8 +86,8 @@ defmodule RiddlerWeb.PuzzleLive.Points do
       height="10"
       rx="2"
       fill={fill_color(@alive)}
-      class={hover_class(@alive)}
-      phx-click="toggle"
+      class="hover:opacity-60"
+      phx-click="toggle-rect"
       phx-value-x={@x}
       phx-value-y={@y}
       phx-target={@myself}
@@ -83,11 +97,4 @@ defmodule RiddlerWeb.PuzzleLive.Points do
 
   defp fill_color(true), do: "black"
   defp fill_color(false), do: "white"
-
-  defp hover_class(alive) do
-    "hover:fill-slate-#{hover_amount(alive)}"
-  end
-
-  defp hover_amount(true), do: "400"
-  defp hover_amount(false), do: "200"
 end
