@@ -5,10 +5,14 @@ defmodule Riddler.Game do
 
   import Ecto.Query, warn: false
 
+  alias Phoenix.PubSub
   alias Ecto.Multi
   alias Riddler.Repo
   alias Riddler.Game.Point
   alias Riddler.Game.Puzzle
+
+  @pubsub Riddler.PubSub
+  @puzzle_changed_topic "puzzle-changed"
 
   @doc """
   Returns the list of puzzles.
@@ -118,9 +122,22 @@ defmodule Riddler.Game do
         %{x: x, y: y, puzzle_id: puzzle.id, inserted_at: now, updated_at: now}
       end)
 
-    Multi.new()
-    |> Multi.delete_all(:delete_points, Ecto.assoc(puzzle, :points))
-    |> Multi.insert_all(:insert_points, Point, new_points)
-    |> Repo.transaction()
+    result =
+      Multi.new()
+      |> Multi.delete_all(:delete_points, Ecto.assoc(puzzle, :points))
+      |> Multi.insert_all(:insert_points, Point, new_points)
+      |> Repo.transaction()
+
+    broadcast_puzzle_changed(puzzle)
+
+    result
+  end
+
+  def broadcast_puzzle_changed(puzzle) do
+    PubSub.broadcast(@pubsub, @puzzle_changed_topic, {:puzzle_changed, puzzle.id})
+  end
+
+  def subscribe_puzzle_changed do
+    PubSub.subscribe(@pubsub, @puzzle_changed_topic)
   end
 end

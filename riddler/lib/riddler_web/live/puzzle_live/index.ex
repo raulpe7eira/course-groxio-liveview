@@ -6,6 +6,7 @@ defmodule RiddlerWeb.PuzzleLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    Game.subscribe_puzzle_changed()
     {:ok, stream(socket, :puzzles, Game.list_puzzles())}
   end
 
@@ -17,13 +18,13 @@ defmodule RiddlerWeb.PuzzleLive.Index do
   defp apply_action(socket, :points, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Points")
-    |> assign(:puzzle, Game.get_puzzle!(id))
+    |> assign_puzzle(id)
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Puzzle")
-    |> assign(:puzzle, Game.get_puzzle!(id))
+    |> assign_puzzle(id)
   end
 
   defp apply_action(socket, :new, _params) do
@@ -38,9 +39,23 @@ defmodule RiddlerWeb.PuzzleLive.Index do
     |> assign(:puzzle, nil)
   end
 
+  defp assign_puzzle(socket, id) do
+    assign(socket, :puzzle, Game.get_puzzle!(id))
+  end
+
   @impl true
   def handle_info({RiddlerWeb.PuzzleLive.FormComponent, {:saved, puzzle}}, socket) do
     {:noreply, stream_insert(socket, :puzzles, puzzle)}
+  end
+
+  @impl true
+  def handle_info({:puzzle_changed, id}, %{assigns: %{puzzle: %{id: id}}} = socket) do
+    {:noreply, assign_puzzle(socket, id)}
+  end
+
+  @impl true
+  def handle_info({:puzzle_changed, _}, socket) do
+    {:noreply, socket}
   end
 
   @impl true
