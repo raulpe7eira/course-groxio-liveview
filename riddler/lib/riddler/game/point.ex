@@ -2,7 +2,7 @@ defmodule Riddler.Game.Point do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Riddle.Game.Puzzle
+  alias Riddler.Game.Puzzle
 
   schema "points" do
     field :y, :integer
