@@ -58,8 +58,8 @@ This repository is the code corresponding to the [Grox.io Learning's LiveView Co
 
 ## [Riddler](riddler/README.md)
 
-> The phoenix app generated w/ default `phx.gen.auth` and `phx.gen.live`.
+> The phoenix app generated w/ default `phx.gen.auth` and `phx.gen.live`, uses an `SVG` live view component, and `PubSub` to show puzzle changes.
 
-![demo-8](https://user-images.githubusercontent.com/456260/231606169-e8be1159-a312-4add-8450-494613f32bbb.gif)
+![demo-8](https://github.com/raulpe7eira/course-groxio-liveview/assets/456260/1a915c47-5109-4d54-bdb3-2e16d3f8d8a2)
 
 </details>
