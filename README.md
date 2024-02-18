@@ -1,6 +1,6 @@
 # course-groxio-liveview
 
-This repository is the code corresponding to the [Grox.io Learning's LiveView Course](https://grox.io/language/liveview/course) lab.
+This repository is the code corresponding to the [Grox.io Learning's LiveView Course](https://grox.io/about-product/liveview) lab.
 
 > There are many apps in this repository.
 
